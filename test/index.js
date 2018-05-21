@@ -17,6 +17,7 @@ describe('js TOTP', function () {
 
     it('should generate SHA1 TOTP', function () {
         expect('94287082').to.be.equal(TOTP.generateTOTP(testToken,TOTP.generateSteps(59),'8'));
+        expect('07081804').to.be.equal(TOTP.generateTOTP(testToken,TOTP.generateSteps(1111111109),'8'));
 
     });
 
