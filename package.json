@@ -1,0 +1,29 @@
+{
+  "name": "citypay-js-totp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/citypay/citypay-js-totp.git"
+  },
+  "keywords": [
+    "totp"
+  ],
+  "author": "michael martins",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/citypay/citypay-js-totp/issues"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.4.1"
+  },
+  "homepage": "https://github.com/citypay/citypay-js-totp#readme",
+  "dependencies": {
+    "crypto-js": "^3.1.9-1"
+  }
+}
