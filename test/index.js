@@ -3,6 +3,7 @@ let expect = require('chai').expect;
 let TOTP = require('../index').TOTP;
 
 describe('js Generate TOTP', function () {
+    "use strict";
     let testTokenSHA1 = '3132333435363738393031323334353637383930';
     let testTokenSHA256 = '3132333435363738393031323334353637383930313233343536373839303132';
     let testTokenSHA512 =
@@ -57,6 +58,7 @@ describe('js Generate TOTP', function () {
 });
 
 describe('js Validate TOTP', function () {
+    "use strict";
     let testTokenSHA1 = '3132333435363738393031323334353637383930';
     let testTokenSHA256 = '3132333435363738393031323334353637383930313233343536373839303132';
     let testTokenSHA512 =
