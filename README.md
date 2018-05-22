@@ -2,7 +2,7 @@ CityPay TOTP
 ============
 
 [![Build Status](https://circleci.com/gh/citypay/citypay-js-totp.svg?&style=shield)](https://circleci.com/gh/citypay/citypay-js-totp)
-
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2b95d00edc1c445dbbc28126539d1c70)](https://www.codacy.com/app/CityPay/citypay-js-totp?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=citypay/citypay-js-totp&amp;utm_campaign=Badge_Grade)
 
 The CityPay TOTP enables to generate and validate TOTP's.
 
