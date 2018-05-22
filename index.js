@@ -1,7 +1,7 @@
 const CryptoJS = require("crypto-js");
-"use strict";
-let TOTP = function () {
-};
+
+let TOTP = function () {};
+
 //                   0  1   2    3     4      5       6        7         8
 const DigitsPower = [1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000];
 const T0 = 0;

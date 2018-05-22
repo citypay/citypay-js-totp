@@ -1,4 +1,3 @@
-"use strict";
 let expect = require('chai').expect;
 let TOTP = require('../index').TOTP;
 
