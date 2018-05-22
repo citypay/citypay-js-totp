@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^3.4.1"
+    "mocha": "^3.5.3"
   },
   "homepage": "https://github.com/citypay/citypay-js-totp#readme",
   "dependencies": {
