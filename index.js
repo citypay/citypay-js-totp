@@ -1,6 +1,7 @@
 const CryptoJS = require("crypto-js");
 
-let TOTP = function () {};
+let TOTP = function () {
+};
 
 //                   0  1   2    3     4      5       6        7         8
 const DigitsPower = [1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000];
@@ -8,17 +9,49 @@ const T0 = 0;
 const DefaultReturnDigits = '6';
 const X = 30;
 
+function wordToByteArray(word, length) {
+    let ba = [];
+    if (length > 0) {
+        ba.push(word >>> 24);
+    }
+    if (length > 1) {
+        ba.push((word >>> 16) & 0xFF);
+    }
+    if (length > 2) {
+        ba.push((word >>> 8) & 0xFF);
+    }
+    if (length > 3) {
+        ba.push(word & 0xFF);
+    }
+    return ba;
+}
+
+function wordArrayToByteArray(wordArray, length) {
+    if (wordArray.hasOwnProperty("sigBytes") && wordArray.hasOwnProperty("words")) {
+        length = wordArray.sigBytes;
+        wordArray = wordArray.words;
+    }
+    let result = [], bytes, i = 0;
+    while (length > 0) {
+        bytes = wordToByteArray(wordArray[i], Math.min(4, length));
+        length -= bytes.length;
+        result.push(bytes);
+        i++;
+    }
+    return [].concat.apply([], result);
+}
+
 TOTP.prototype.generateSteps = function (utc, t0 = T0) {
     let T = Math.floor((utc - t0) / X);
 
     return T.toString(16).padStart(16, '0').toUpperCase();
 };
 
-let HmacSHA1 = (msg, k) => CryptoJS.HmacSHA1(msg, k);
-let HmacSHA256 = (msg, k) => CryptoJS.HmacSHA256(msg, k);
-let HmacSHA512 = (msg, k) => CryptoJS.HmacSHA512(msg, k);
+let hmacSHA1 = (msg, k) => CryptoJS.HmacSHA1(msg, k);
+let hmacSHA256 = (msg, k) => CryptoJS.HmacSHA256(msg, k);
+let hmacSHA512 = (msg, k) => CryptoJS.HmacSHA512(msg, k);
 
-TOTP.prototype.generateTOTP = function (key, steps, returnDigits, algorithm = HmacSHA1) {
+TOTP.prototype.generateTOTP = function (key, steps, returnDigits, algorithm = hmacSHA1) {
     if (steps.length !== 16) {
         throw new Error('Steps should be 16 digits');
     }
@@ -40,60 +73,34 @@ TOTP.prototype.generateTOTP = function (key, steps, returnDigits, algorithm = Hm
 };
 
 TOTP.prototype.generateTOTP256 = function (key, steps, returnDigits) {
-    return this.generateTOTP(key, steps, returnDigits, HmacSHA256);
+    return this.generateTOTP(key, steps, returnDigits, hmacSHA256);
 };
 
 TOTP.prototype.generateTOTP512 = function (key, steps, returnDigits) {
-    return this.generateTOTP(key, steps, returnDigits, HmacSHA512);
+    return this.generateTOTP(key, steps, returnDigits, hmacSHA512);
 };
-
-function wordToByteArray(word, length) {
-    let ba = [];
-    if (length > 0)
-        ba.push(word >>> 24);
-    if (length > 1)
-        ba.push((word >>> 16) & 0xFF);
-    if (length > 2)
-        ba.push((word >>> 8) & 0xFF);
-    if (length > 3)
-        ba.push(word & 0xFF);
-    return ba;
-}
-
-function wordArrayToByteArray(wordArray, length) {
-    if (wordArray.hasOwnProperty("sigBytes") && wordArray.hasOwnProperty("words")) {
-        length = wordArray.sigBytes;
-        wordArray = wordArray.words;
-    }
-    let result = [], bytes, i = 0;
-    while (length > 0) {
-        bytes = wordToByteArray(wordArray[i], Math.min(4, length));
-        length -= bytes.length;
-        result.push(bytes);
-        i++;
-    }
-    return [].concat.apply([], result);
-}
 
 TOTP.prototype.validateSHA1 = function (key, totp,
                                         time = Date.now() / 1000,
                                         returnDigits = DefaultReturnDigits,
                                         transmissionDelayWindow = 1) {
-    return this.validate(key, totp, time, returnDigits, transmissionDelayWindow, HmacSHA1)
+    return this.validate(key, totp, time, returnDigits, transmissionDelayWindow, hmacSHA1);
 };
 
-TOTP.prototype.validateSHA256 = function (key, totp,
-                                        time = Date.now() / 1000,
-                                        returnDigits = DefaultReturnDigits,
-                                        transmissionDelayWindow = 1) {
-    return this.validate(key, totp, time, returnDigits, transmissionDelayWindow, HmacSHA256)
+TOTP.prototype.validateSHA256 = function (key,
+                                          totp,
+                                          time = Date.now() / 1000,
+                                          returnDigits = DefaultReturnDigits,
+                                          transmissionDelayWindow = 1) {
+    return this.validate(key, totp, time, returnDigits, transmissionDelayWindow, hmacSHA256);
 };
 
-TOTP.prototype.validateSHA512 = function (key, totp,
-                                        time = Date.now() / 1000,
-                                        returnDigits = DefaultReturnDigits,
-                                        transmissionDelayWindow = 1) {
-    return this.validate(key, totp, time, returnDigits, transmissionDelayWindow, HmacSHA512)
+TOTP.prototype.validateSHA512 = function (key,
+                                          totp,
+                                          time = Date.now() / 1000,
+                                          returnDigits = DefaultReturnDigits,
+                                          transmissionDelayWindow = 1) {
+    return this.validate(key, totp, time, returnDigits, transmissionDelayWindow, hmacSHA512);
 };
 
 TOTP.prototype.validate = function (key, totp,
@@ -101,14 +108,20 @@ TOTP.prototype.validate = function (key, totp,
                                     returnDigits = DefaultReturnDigits,
                                     transmissionDelayWindow = 1,
                                     algorithm) {
-    if (algorithm === "HmacSHA1"){algorithm=HmacSHA1}
-    else if (algorithm === "HmacSHA256"){algorithm=HmacSHA256}
-    else if (algorithm === "HmacSHA512"){algorithm=HmacSHA512}
+    if (algorithm === "HmacSHA1") {
+        algorithm = hmacSHA1;
+    }
+    else if (algorithm === "HmacSHA256") {
+        algorithm = hmacSHA256;
+    }
+    else if (algorithm === "HmacSHA512") {
+        algorithm = hmacSHA512;
+    }
     let i;
     for (i = 0; i <= transmissionDelayWindow; i++) {
-        let steps = this.generateSteps(time-(i*X),T0);
-        let result = this.generateTOTP(key,steps,returnDigits,algorithm);
-        if (result===totp){
+        let steps = this.generateSteps(time - (i * X), T0);
+        let result = this.generateTOTP(key, steps, returnDigits, algorithm);
+        if (result === totp) {
             return true;
         }
     }
