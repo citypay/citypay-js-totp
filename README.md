@@ -1,6 +1,9 @@
 CityPay TOTP
 ============
 
+[![Build Status](https://circleci.com/gh/citypay/citypay-js-totp.svg?&style=shield)](https://circleci.com/gh/citypay/citypay-js-totp)
+
+
 The CityPay TOTP enables to generate and validate TOTP's.
 
 ### TOTP encryption
