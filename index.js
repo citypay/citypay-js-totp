@@ -39,6 +39,14 @@ TOTP.prototype.generateTOTP = function (key, steps, returnDigits, algorithm = Hm
     return result.padStart(codeDigits, "0");
 };
 
+TOTP.prototype.generateTOTP256 = function (key, steps, returnDigits) {
+    return this.generateTOTP(key, steps, returnDigits, HmacSHA256);
+};
+
+TOTP.prototype.generateTOTP512 = function (key, steps, returnDigits) {
+    return this.generateTOTP(key, steps, returnDigits, HmacSHA512);
+};
+
 function wordToByteArray(word, length) {
     let ba = [];
     if (length > 0)
@@ -67,4 +75,43 @@ function wordArrayToByteArray(wordArray, length) {
     return [].concat.apply([], result);
 }
 
+TOTP.prototype.validateSHA1 = function (key, totp,
+                                        time = Date.now() / 1000,
+                                        returnDigits = DefaultReturnDigits,
+                                        transmissionDelayWindow = 1) {
+    return this.validate(key, totp, time, returnDigits, transmissionDelayWindow, HmacSHA1)
+};
+
+TOTP.prototype.validateSHA256 = function (key, totp,
+                                        time = Date.now() / 1000,
+                                        returnDigits = DefaultReturnDigits,
+                                        transmissionDelayWindow = 1) {
+    return this.validate(key, totp, time, returnDigits, transmissionDelayWindow, HmacSHA256)
+};
+
+TOTP.prototype.validateSHA512 = function (key, totp,
+                                        time = Date.now() / 1000,
+                                        returnDigits = DefaultReturnDigits,
+                                        transmissionDelayWindow = 1) {
+    return this.validate(key, totp, time, returnDigits, transmissionDelayWindow, HmacSHA512)
+};
+
+TOTP.prototype.validate = function (key, totp,
+                                    time = Date.now() / 1000,
+                                    returnDigits = DefaultReturnDigits,
+                                    transmissionDelayWindow = 1,
+                                    algorithm) {
+    if (algorithm === "HmacSHA1"){algorithm=HmacSHA1}
+    else if (algorithm === "HmacSHA256"){algorithm=HmacSHA256}
+    else if (algorithm === "HmacSHA512"){algorithm=HmacSHA512}
+    let i;
+    for (i = 0; i <= transmissionDelayWindow; i++) {
+        let steps = this.generateSteps(time-(i*X),T0);
+        let result = this.generateTOTP(key,steps,returnDigits,algorithm);
+        if (result===totp){
+            return true;
+        }
+    }
+    return false;
+};
 exports.TOTP = new TOTP();
